@@ -6,6 +6,8 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.Keys
+import org.openqa.selenium.By
 
 // This might not work to pull TestObject class. May need to import locally.
 // Should probably find a way to use TestObjects without katalon's class
@@ -22,22 +24,13 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
         }
     };
 
-		
-	//public static void main(String[] args)
-	//{
-	//	WebUI.delay(5)
-	//	WebUI.openBrowser()
-	//	WebUI.navigateToUrl("https://www.google.com")
-	//}
-
 	public static void openBrowser() 
 	{
-		WebDriver webDriver = null;
+		ChromeDriver webDriver = null;
 		System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Senior-Design-2-pcteUI" + "\\chromedriver.exe")
 		webDriver = new ChromeDriver()
 		threadLocal.set(webDriver);
 	}
-
 
 	public static void navigateToUrl(String url) 
 	{
@@ -118,8 +111,10 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
 		{
 			return;
 		}
-
+		Thread.sleep(3000);
 		Set<String> windows = webDriver.getWindowHandles();
+		Thread.sleep(3000);
+		print (windows)
 		for (String windowTitle : windows) 
 		{
 			webDriver = webDriver.switchTo().window(windowTitle);
