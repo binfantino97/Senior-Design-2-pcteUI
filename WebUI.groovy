@@ -23,12 +23,12 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
     };
 
 		
-	public static void main(String[] args)
-	{
-		WebUI.delay(5)
-		WebUI.openBrowser()
-		WebUI.navigateToUrl("https://www.google.com")
-	}
+	//public static void main(String[] args)
+	//{
+	//	WebUI.delay(5)
+	//	WebUI.openBrowser()
+	//	WebUI.navigateToUrl("https://www.google.com")
+	//}
 
 	public static void openBrowser() 
 	{
