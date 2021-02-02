@@ -33,7 +33,7 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
 	public static void openBrowser() 
 	{
 		WebDriver webDriver = null;
-		System.setProperty("webdriver.chrome.driver", "C:/SDII_WebUI" + "\\chromedriver.exe")
+		System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Senior-Design-2-pcteUI" + "\\chromedriver.exe")
 		webDriver = new ChromeDriver()
 		threadLocal.set(webDriver);
 	}
@@ -71,5 +71,81 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
 	public static void delay(long delayTime) 
 	{
 		sleep(delayTime*1000)
+	}
+
+	@CompileStatic
+	public static void closeBrowser() 
+	{
+		WebDriver webDriver = threadLocal.get();
+		webDriver.quit();
+	}
+
+	@CompileStatic
+	public static void maximizeWindow() 
+	{
+		// need to manually resize the window if test is being run on Mac
+		WebDriver webDriver = threadLocal.get();
+		webDriver.manage().window().maximize();
+	}
+
+	@CompileStatic
+	public static void closeWindowTitle(String title)
+	{
+		WebDriver webDriver = threadLocal.get();
+
+		if(webDriver == null)
+		{
+			return;
+		}
+
+		Set<String> windows = webDriver.getWindowHandles();
+		for (String windowTitle : windows) 
+		{
+			webDriver = webDriver.switchTo().window(windowTitle);
+			if (webDriver.getTitle().equals(title)) 
+			{
+				webDriver.close();
+			}
+		}
+	}
+
+	@CompileStatic
+	public static void switchToWindowTitle(String title)
+	{
+		WebDriver webDriver = threadLocal.get();
+
+		if(webDriver == null)
+		{
+			return;
+		}
+
+		Set<String> windows = webDriver.getWindowHandles();
+		for (String windowTitle : windows) 
+		{
+			webDriver = webDriver.switchTo().window(windowTitle);
+			if (webDriver.getTitle().equals(title)) 
+			{
+				break;
+			}
+		}
+	}
+
+	@CompileStatic
+	public static void switchToWindowIndex(Object index)
+	{
+		WebDriver webDriver = threadLocal.get();
+
+		if(webDriver == null || index == null)
+		{
+			return;
+		}
+		
+		Integer parsedIndex = Integer.parseInt(String.valueOf(index));
+
+		List<String> windows = new ArrayList<String>(webDriver.getWindowHandles());
+		if (parsedIndex >= 0 && parsedIndex < windows.size()) 
+		{
+			webDriver.switchTo().window(windows.get(parsedIndex));
+		}
 	}
 }

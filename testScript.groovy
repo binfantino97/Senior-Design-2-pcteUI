@@ -6,6 +6,7 @@ public class testScript
 		WebUI.delay(2)
 		WebUI.openBrowser()
 		WebUI.navigateToUrl("https://www.google.com")
+		WebUI.maximizeWindow()
 	}
 
 
