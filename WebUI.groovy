@@ -6,7 +6,6 @@ import org.openqa.selenium.WebElement
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
-import org.openqa.selenium.Keys
 import org.openqa.selenium.By
 
 // This might not work to pull TestObject class. May need to import locally.
@@ -16,49 +15,79 @@ import org.openqa.selenium.By
 
 public class WebUI 
 {
-
-private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDriver>() {
+	private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDriver>() {
         @Override
         protected WebDriver initialValue() {
             return null;
         }
     };
-
-	public static void openBrowser() 
+		
+	public static void main(String[] args)
 	{
-		ChromeDriver webDriver = null;
-		System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Senior-Design-2-pcteUI" + "\\chromedriver.exe")
-		webDriver = new ChromeDriver()
-		threadLocal.set(webDriver);
+		// WebUI.maximizeWindow();
+		// WebUI.delay(1);
+		// WebUI.closeWindowTitle("Google");
+		ObjectRepositoryParser O = new ObjectRepositoryParser();
+
+		WebUI.openBrowser("");
+		WebUI.navigateToUrl("https://www.google.com");
+		//TestObject to = new TestObject(O.getXpath("div_media only screen and (max-width380px)g_4bbbd6"));
+		//WebUI.click(to);
+    	TestObject to = new TestObject(O.getXpath("input_Sign in_q.rs"));
+		WebUI.setText(to, "cheese");
+	}
+
+	public static void openBrowser(String browser) 
+	{
+		WebDriver webDriver = null;
+
+		switch(browser) 
+		{
+			case "firefox":
+				System.setProperty("webdriver.gecko.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/firefox_win64" + "\\geckodriver.exe")
+				webDriver = new FirefoxDriver()
+				threadLocal.set(webDriver);
+				break
+			case "chrome":
+				System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/chromedriver_win32" + "\\chromedriver.exe")
+				webDriver = new ChromeDriver()
+				threadLocal.set(webDriver);
+				break
+			case "":
+			default:
+				System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/chromedriver_win32" + "\\chromedriver.exe")
+				webDriver = new ChromeDriver()
+				threadLocal.set(webDriver);
+				break
+		}
 	}
 
 	public static void navigateToUrl(String url) 
 	{
-
-		if(threadLocal.get() == null){
+		if(threadLocal.get() == null)
+		{
 			WebUI.openBrowser()
 		}
 		
 		WebDriver webDriver = threadLocal.get();
-
 		webDriver.navigate().to(url);
-		// this needs to get the WebDriver that's currently running before
-		// it can navigate to a page
-		//WebDriver webDriver =
-		//webDriver.navigate().to(url)
 	}
 
-	// @CompileStatic
-	// public static void click(TestObject to) 
-	// {
+	@CompileStatic
+	public static void click(TestObject to) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = webDriver.findElement(By.xpath("viewport"));
+		webElement.click();
+	}
 
-	// }
-
-	// @CompileStatic
-	// public static void setText(TestObject to, String text) 
-	// {
-	// 	webElement.sendKeys(text);
-	// }
+	@CompileStatic
+	public static void setText(TestObject to, String text) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = webDriver.findElement(By.xpath(to.xpaths[0]));
+		webElement.sendKeys(text);
+	}
 
 	//@CompileStatic // disallows groovy methods for some reason
 	public static void delay(long delayTime) 
@@ -111,10 +140,8 @@ private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDri
 		{
 			return;
 		}
-		Thread.sleep(3000);
+
 		Set<String> windows = webDriver.getWindowHandles();
-		Thread.sleep(3000);
-		print (windows)
 		for (String windowTitle : windows) 
 		{
 			webDriver = webDriver.switchTo().window(windowTitle);
