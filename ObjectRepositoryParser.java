@@ -81,7 +81,7 @@ public class ObjectRepositoryParser
   }
 
   //call this function to print and return a list of the strings of the xpath values
-  public ArrayList<String> getXpath (String s)
+  public static ArrayList<String> getXpath (String s)
   {
 
     ArrayList<String> Xpath = new ArrayList<String>();

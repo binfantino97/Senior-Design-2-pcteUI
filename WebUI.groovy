@@ -27,14 +27,12 @@ public class WebUI
 		// WebUI.maximizeWindow();
 		// WebUI.delay(1);
 		// WebUI.closeWindowTitle("Google");
-		ObjectRepositoryParser O = new ObjectRepositoryParser();
+		//ObjectRepositoryParser O = new ObjectRepositoryParser();
 
-		WebUI.openBrowser("");
-		WebUI.navigateToUrl("https://www.google.com");
-		//TestObject to = new TestObject(O.getXpath("div_media only screen and (max-width380px)g_4bbbd6"));
-		//WebUI.click(to);
-    	TestObject to = new TestObject(O.getXpath("input_Sign in_q.rs"));
-		WebUI.setText(to, "cheese");
+		WebUI.openBrowser('');
+		WebUI.navigateToUrl('https://www.google.com');
+		WebUI.click(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/div_media only screen and (max-width380px)g_4bbbd6'));
+		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
 	}
 
 	public static void openBrowser(String browser) 
@@ -77,7 +75,7 @@ public class WebUI
 	public static void click(TestObject to) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = webDriver.findElement(By.xpath("viewport"));
+		WebElement webElement = webDriver.findElement(By.xpath(to.xpaths[0]));
 		webElement.click();
 	}
 
@@ -85,6 +83,7 @@ public class WebUI
 	public static void setText(TestObject to, String text) 
 	{
 		WebDriver webDriver = threadLocal.get();
+		
 		WebElement webElement = webDriver.findElement(By.xpath(to.xpaths[0]));
 		webElement.sendKeys(text);
 	}
@@ -169,5 +168,13 @@ public class WebUI
 		{
 			webDriver.switchTo().window(windows.get(parsedIndex));
 		}
+	}
+
+	public static TestObject findTestObject(String path)
+	{
+		String userPath = "C:/Users/cunod/Katalon Studio/PCTE Tests/";
+		String rs = ".rs";
+		
+		return new TestObject(ObjectRepositoryParser.getXpath(userPath + path + rs));
 	}
 }
