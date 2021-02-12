@@ -10,13 +10,6 @@ import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.support.ui.ExpectedConditions
 
-import java.time.Duration;
-
-// This might not work to pull TestObject class. May need to import locally.
-// Should probably find a way to use TestObjects without katalon's class
-// @Grab(group='com.katalon', module='utils', version='1.0.15')
-// import com.kms.katalon.core.testobject.*
-
 public class WebUI 
 {
 	private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDriver>() {
@@ -28,15 +21,7 @@ public class WebUI
 		
 	public static void main(String[] args)
 	{
-		// WebUI.maximizeWindow();
-		// WebUI.delay(1);
-		// WebUI.closeWindowTitle("Google");
-		//ObjectRepositoryParser O = new ObjectRepositoryParser();
 
-		WebUI.openBrowser('');
-		WebUI.navigateToUrl('https://www.google.com/');
-		//WebUI.click(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/div_media only screen and (max-width380px)g_4bbbd6'));
-		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
 	}
 
 	public static void openBrowser(String browser) 
