@@ -81,10 +81,10 @@ public class ObjectRepositoryParser
   }
 
   //call this function to print and return a list of the strings of the xpath values
-  public static ArrayList<String> getXpath (String s)
+  public static String getXpath (String s)
   {
 
-    ArrayList<String> Xpath = new ArrayList<String>();
+    String Xpath = "";
     try
     {
       //File file = new File("Sample.xml");
@@ -104,7 +104,10 @@ public class ObjectRepositoryParser
 
       for (webElementXpaths w : web)
       {
-        Xpath.add(w.value);
+        if (w.isSelected)
+        {
+          Xpath = w.value;
+        }
       }
 
       /*for (webElementXpaths w : web)
@@ -122,10 +125,8 @@ public class ObjectRepositoryParser
       System.out.println(e.getMessage());
     }
     //Comment this section out if you dont want it printing
-    for (String string : Xpath)
-    {
-      System.out.println(string);
-    }
+    System.out.println(Xpath);
+
     return Xpath;
   }
 

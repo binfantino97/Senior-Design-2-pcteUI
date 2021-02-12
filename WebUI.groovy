@@ -34,9 +34,9 @@ public class WebUI
 		//ObjectRepositoryParser O = new ObjectRepositoryParser();
 
 		WebUI.openBrowser('');
-		WebUI.navigateToUrl('https://www.tomshardware.com/');
-		WebUI.click(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/div_media only screen and (max-width380px)g_4bbbd6'));
-		//WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
+		WebUI.navigateToUrl('https://www.google.com/');
+		//WebUI.click(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/div_media only screen and (max-width380px)g_4bbbd6'));
+		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
 	}
 
 	public static void openBrowser(String browser) 
@@ -79,7 +79,7 @@ public class WebUI
 	public static void click(TestObject to) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='exitintentform']/div[4]/input")));
+		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
   
 		webElement.click();
 	}
@@ -88,8 +88,8 @@ public class WebUI
 	public static void setText(TestObject to, String text) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		
-		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.xpaths[0])));
+		print(to.xpath);
+		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 		webElement.sendKeys(text);
 	}
 

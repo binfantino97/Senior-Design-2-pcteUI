@@ -1,15 +1,13 @@
-import java.util.ArrayList;
-
 public class TestObject {
-    private ArrayList<String> xpaths;
+    private String xpath;
 
-    public TestObject(ArrayList<String> list)
+    public TestObject(String xpath)
     {
-        this.xpaths = list;
+        this.xpath = xpath;
     }
 
-    public ArrayList<String> getXpaths()
+    public String getXpath()
     {
-        return this.xpaths;
+        return this.xpath;
     }
 }
