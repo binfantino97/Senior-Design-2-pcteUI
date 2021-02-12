@@ -7,6 +7,10 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.support.ui.ExpectedConditions
+
+import java.time.Duration;
 
 // This might not work to pull TestObject class. May need to import locally.
 // Should probably find a way to use TestObjects without katalon's class
@@ -30,9 +34,9 @@ public class WebUI
 		//ObjectRepositoryParser O = new ObjectRepositoryParser();
 
 		WebUI.openBrowser('');
-		WebUI.navigateToUrl('https://www.google.com');
+		WebUI.navigateToUrl('https://www.tomshardware.com/');
 		WebUI.click(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/div_media only screen and (max-width380px)g_4bbbd6'));
-		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
+		//WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'cheese');
 	}
 
 	public static void openBrowser(String browser) 
@@ -75,7 +79,8 @@ public class WebUI
 	public static void click(TestObject to) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = webDriver.findElement(By.xpath(to.xpaths[0]));
+		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.elementToBeClickable(By.xpath("//*[@id='exitintentform']/div[4]/input")));
+  
 		webElement.click();
 	}
 
@@ -84,7 +89,7 @@ public class WebUI
 	{
 		WebDriver webDriver = threadLocal.get();
 		
-		WebElement webElement = webDriver.findElement(By.xpath(to.xpaths[0]));
+		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.xpaths[0])));
 		webElement.sendKeys(text);
 	}
 
