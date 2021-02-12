@@ -1,6 +1,6 @@
-import static WebUI
+import static WebUI.findTestObject
 
-public class testScript 
+public class TestScript 
 {
 	public static void main(String[] args)
 	{

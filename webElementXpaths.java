@@ -1,3 +1,5 @@
+package xml_parser;
+
 import java.util.*;
 
 public class webElementXpaths

@@ -1,3 +1,5 @@
+package test_object;
+
 public class TestObject {
     private String xpath;
 

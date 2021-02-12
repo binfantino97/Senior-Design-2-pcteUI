@@ -31,18 +31,18 @@ public class WebUI
 		switch(browser) 
 		{
 			case "firefox":
-				System.setProperty("webdriver.gecko.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/firefox_win64" + "\\geckodriver.exe")
+				System.setProperty("webdriver.gecko.driver", "./" + "\\geckodriver.exe")
 				webDriver = new FirefoxDriver()
 				threadLocal.set(webDriver);
 				break
 			case "chrome":
-				System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/chromedriver_win32" + "\\chromedriver.exe")
+				System.setProperty("webdriver.chrome.driver", "./" + "\\chromedriver.exe")
 				webDriver = new ChromeDriver()
 				threadLocal.set(webDriver);
 				break
 			case "":
 			default:
-				System.setProperty("webdriver.chrome.driver", "E:/David_Main_Folder/Projects/Katalon_Studio_Windows_64-7.7.1/configuration/resources/drivers/chromedriver_win32" + "\\chromedriver.exe")
+				System.setProperty("webdriver.chrome.driver", "./" + "\\chromedriver.exe")
 				webDriver = new ChromeDriver()
 				threadLocal.set(webDriver);
 				break
