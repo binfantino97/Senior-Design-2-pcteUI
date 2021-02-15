@@ -42,8 +42,8 @@ public class WebUI
 				break
 			case "":
 			default:
-				System.setProperty("webdriver.chrome.driver", "./" + "\\chromedriver.exe")
-				webDriver = new ChromeDriver()
+				System.setProperty("webdriver.chrome.driver", "./" + "\\geckodriver.exe")
+				webDriver = new FirefoxDriver()
 				threadLocal.set(webDriver);
 				break
 		}
@@ -73,9 +73,16 @@ public class WebUI
 	public static void setText(TestObject to, String text) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		print(to.xpath);
 		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 		webElement.sendKeys(text);
+	}
+
+	@CompileStatic
+	public static void sendKeys(TestObject to, String keys) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+		webElement.sendKeys(keys);
 	}
 
 	//@CompileStatic // disallows groovy methods for some reason
@@ -157,6 +164,26 @@ public class WebUI
 		if (parsedIndex >= 0 && parsedIndex < windows.size()) 
 		{
 			webDriver.switchTo().window(windows.get(parsedIndex));
+		}
+	}
+
+	@CompileStatic
+	public static void closeWindowIndex(Object index)
+	{
+		WebDriver webDriver = threadLocal.get();
+
+		if(webDriver == null || index == null)
+		{
+			return;
+		}
+		
+		Integer parsedIndex = Integer.parseInt(String.valueOf(index));
+
+		List<String> windows = new ArrayList<String>(webDriver.getWindowHandles());
+		if (parsedIndex >= 0 && parsedIndex < windows.size()) 
+		{
+			webDriver.switchTo().window(windows.get(parsedIndex));
+			webDriver.close();
 		}
 	}
 
