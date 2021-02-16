@@ -107,27 +107,6 @@ public class WebUI
 	}
 
 	@CompileStatic
-	public static void closeWindowTitle(String title)
-	{
-		WebDriver webDriver = threadLocal.get();
-
-		if(webDriver == null)
-		{
-			return;
-		}
-
-		Set<String> windows = webDriver.getWindowHandles();
-		for (String windowTitle : windows) 
-		{
-			webDriver = webDriver.switchTo().window(windowTitle);
-			if (webDriver.getTitle().equals(title)) 
-			{
-				webDriver.close();
-			}
-		}
-	}
-
-	@CompileStatic
 	public static void switchToWindowTitle(String title)
 	{
 		WebDriver webDriver = threadLocal.get();
@@ -144,6 +123,27 @@ public class WebUI
 			if (webDriver.getTitle().equals(title)) 
 			{
 				break;
+			}
+		}
+	}
+
+	@CompileStatic
+	public static void closeWindowTitle(String title)
+	{
+		WebDriver webDriver = threadLocal.get();
+
+		if(webDriver == null)
+		{
+			return;
+		}
+
+		Set<String> windows = webDriver.getWindowHandles();
+		for (String windowTitle : windows) 
+		{
+			webDriver = webDriver.switchTo().window(windowTitle);
+			if (webDriver.getTitle().equals(title)) 
+			{
+				webDriver.close();
 			}
 		}
 	}
@@ -193,5 +193,13 @@ public class WebUI
 		String rs = ".rs";
 		
 		return new TestObject(ObjectRepositoryParser.getXpath(userPath + path + rs));
+	}
+
+	@CompileStatic
+	public static boolean waitForElementClickable(TestObject to, int timeout) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+		return true;
 	}
 }
