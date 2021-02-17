@@ -13,8 +13,6 @@ public class TestScript
 
 		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'kenmore manual')
 
-		WebUI.sendKeys(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), Keys.chord(Keys.ENTER))
-
-		WebUI.waitForElementClickable(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_kenmore manual - Google Search/span_Kenmore Appliances for Kitchen, Laundry  Home'), 10)
+		WebUI.submit(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'))
 	}
 }
