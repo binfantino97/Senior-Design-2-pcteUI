@@ -55,6 +55,17 @@ public class WebUI
 				break
 		}
 	}
+	
+	public static TestObject findTestObject(String path)
+	{
+		String userPath = "C:/Users/cunod/Katalon Studio/PCTE Tests/";
+		String rs = ".rs";
+		
+		if(!path.contains("Object Repository/"))
+			path = "Object Repository/" + path;
+
+		return new TestObject(ObjectRepositoryParser.getXpath(userPath + path + rs));
+	}
 
 	public static void navigateToUrl(String url) 
 	{
@@ -192,17 +203,6 @@ public class WebUI
 			webDriver.switchTo().window(windows.get(parsedIndex));
 			webDriver.close();
 		}
-	}
-
-	public static TestObject findTestObject(String path)
-	{
-		String userPath = "C:/Users/cunod/Katalon Studio/PCTE Tests/";
-		String rs = ".rs";
-		
-		if(!path.contains("Object Repository/"))
-			path = "Object Repository/" + path;
-
-		return new TestObject(ObjectRepositoryParser.getXpath(userPath + path + rs));
 	}
 
 	@CompileStatic
