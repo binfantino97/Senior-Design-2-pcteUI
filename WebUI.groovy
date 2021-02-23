@@ -3,16 +3,18 @@ import groovy.transform.CompileStatic
 
 @Grab(group='org.seleniumhq.selenium', module='selenium-java', version='3.141.59')
 import org.openqa.selenium.By
-import org.openqa.selenium.WebElement
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.TimeoutException
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.interactions.Actions
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.NoSuchElementException
-// Cuno: Haven't implemented TimeoutException, but should consider it for error control. 
-// Maybe continuing past some function errors? Maybe for the runtime engine running Test Suites to continue past failed Test Cases.
-import org.openqa.selenium.TimeoutException
-import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.support.ui.FluentWait
+import org.openqa.selenium.support.ui.WebDriverWait
 import org.openqa.selenium.support.ui.ExpectedConditions
 
 import com.google.common.base.Function
@@ -23,6 +25,11 @@ import java.util.concurrent.TimeUnit
 public class WebUI 
 {
 	private static int webUITimeout = 10;
+
+	public static void setWebUITimeout(int timeout)
+	{
+		webUITimeout = timeout;
+	}
 
 	private static final ThreadLocal<WebDriver> threadLocal = new ThreadLocal<WebDriver>() {
         @Override
@@ -49,8 +56,8 @@ public class WebUI
 				break
 			case "":
 			default:
-				System.setProperty("webdriver.chrome.driver", "./" + "\\geckodriver.exe")
-				webDriver = new FirefoxDriver()
+				System.setProperty("webdriver.chrome.driver", "./" + "\\chromedriver.exe")
+				webDriver = new ChromeDriver()
 				threadLocal.set(webDriver);
 				break
 		}
@@ -58,7 +65,7 @@ public class WebUI
 	
 	public static TestObject findTestObject(String path)
 	{
-		String userPath = "C:/Users/cunod/Katalon Studio/PCTE Tests/";
+		String userPath = "C:/Users/cunod/Katalon Studio/GOLDTEST/";
 		String rs = ".rs";
 		
 		if(!path.contains("Object Repository/"))
@@ -82,8 +89,9 @@ public class WebUI
 	public static void click(TestObject to) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
-  
+		WebElement webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 		webElement.click();
 	}
 
@@ -91,7 +99,9 @@ public class WebUI
 	public static void setText(TestObject to, String text) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+		WebElement webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 		webElement.sendKeys(text);
 	}
 
@@ -99,8 +109,18 @@ public class WebUI
 	public static void sendKeys(TestObject to, String keys) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+		WebElement webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 		webElement.sendKeys(keys);
+	}
+
+	@CompileStatic
+	public static void deleteAllCookies() 
+	{
+		WebDriver webDriver = threadLocal.get();
+		if (webDriver != null)
+			webDriver.manage().deleteAllCookies();
 	}
 
 	//@CompileStatic // disallows groovy methods for some reason
@@ -113,7 +133,8 @@ public class WebUI
 	public static void closeBrowser() 
 	{
 		WebDriver webDriver = threadLocal.get();
-		webDriver.quit();
+		if (webDriver != null)
+			webDriver.quit();
 	}
 
 	@CompileStatic
@@ -121,7 +142,8 @@ public class WebUI
 	{
 		// need to manually resize the window if test is being run on Mac
 		WebDriver webDriver = threadLocal.get();
-		webDriver.manage().window().maximize();
+		if (webDriver != null)
+			webDriver.manage().window().maximize();
 	}
 
 	@CompileStatic
@@ -209,7 +231,9 @@ public class WebUI
 	public static boolean waitForElementClickable(TestObject to, int timeout) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+		WebElement webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 		return true;
 	}
 
@@ -217,11 +241,17 @@ public class WebUI
 	public static boolean verifyElementAttributeValue(TestObject to, String attributeName, String attributeValue, int timeout) 
 	{
 		WebDriver webDriver = threadLocal.get();
-		WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+		WebElement webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 		if ((webElement.getAttribute(attributeName) != null) && (webElement.getAttribute(attributeName).equals(attributeValue)))
+		{
 			return true;
+		}
 		else
+		{
 			return false;
+		}
 	}
 
 	@CompileStatic
@@ -299,16 +329,98 @@ public class WebUI
 	{
 		WebDriver webDriver = threadLocal.get();
 		WebElement webElement;
-		try
+
+		webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+		webElement.submit();
+	}
+
+	@CompileStatic
+	public static int getElementHeight(TestObject to) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement;
+
+		webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+		return webElement.getSize().height;
+	}
+
+	@CompileStatic
+	public static int getElementWidth(TestObject to) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement;
+
+		webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+		return webElement.getSize().width;
+	}
+
+	@CompileStatic
+	public static void refresh() 
+	{
+		threadLocal.get().navigate().refresh();
+	}
+
+	@CompileStatic
+	public static void scrollToElement(TestObject to, int timeout) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement;
+
+		webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+		JavascriptExecutor js = (JavascriptExecutor) webDriver;
+		js.executeScript("arguments[0].scrollIntoView();", webElement);
+	}
+
+	@CompileStatic
+	public static void focus(TestObject to) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement;
+
+		webElement = new FluentWait<WebDriver>(webDriver)
+			.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+			.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+		if ("input".equals(webElement.getTagName()))
 		{
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
-			webElement.submit();
+			webElement.sendKeys("");
 		}
-		catch(TimeoutException)
+		else
 		{
-			// timeout. do nothing
+			new Actions(webDriver).moveToElement(webElement).perform()
 		}
+	}
+
+	@CompileStatic
+	public static boolean verifyTextPresent(String text, boolean isRegex) 
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = webDriver.findElement(By.tagName("body"));
+		String pageText = webElement.getText();
+		boolean isPresent;
+
+		if (pageText != null && !pageText.isEmpty()) 
+		{
+            if (isRegex) 
+			{
+                Pattern pattern = Pattern.compile(text);
+                Matcher matcher = pattern.matcher(pageText);
+                while (matcher.find()) 
+				{
+                    isPresent = true;
+                    break;
+                }
+            } else {
+                isPresent = pageText.contains(text);
+            }
+        }
+        return isPresent;
 	}
 }

@@ -11,8 +11,10 @@ public class TestScript
 
 		WebUI.navigateToUrl('https://www.google.com/?gws_rd=ssl')
 
-		WebUI.setText(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'), 'kenmore manual')
+		WebUI.setText(findTestObject('Page_Google/input__q'), 'kenmore manual')
 
-		WebUI.submit(findTestObject('Object Repository/Testing/Click-SetText-Delay/Page_Google/input_Sign in_q'))
+		WebUI.submit(findTestObject('Page_Google/input__q'))
+
+		WebUI.deleteAllCookies()
 	}
 }
