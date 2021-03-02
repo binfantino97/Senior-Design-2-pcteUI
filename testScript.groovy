@@ -12,9 +12,5 @@ public class TestScript
 		WebUI.navigateToUrl('https://www.google.com/?gws_rd=ssl')
 
 		WebUI.setText(findTestObject('Page_Google/input__q'), 'kenmore manual')
-
-		WebUI.submit(findTestObject('Page_Google/input__q'))
-
-		WebUI.deleteAllCookies()
 	}
 }
