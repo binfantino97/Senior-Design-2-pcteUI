@@ -9,12 +9,10 @@ public class TestScript
 	{
 		WebUI.openBrowser('')
 
-WebUI.navigateToUrl('https://www.google.com/?gws_rd=ssl')
+		WebUI.navigateToUrl('https://www.google.com/?gws_rd=ssl')
 
-WebUI.setText(findTestObject('Page_Google/input__q'), 'hello')
+		WebUI.setText(findTestObject('Page_Google/input__q'), 'hello')
 
-WebUI.submit(findTestObject('Page_Google/input__q'))
-
-print(WebUI.verifyElementText(findTestObject('Page_hello - Google Search/span_Hello, its me'), 'Hello, it\'s mes'))
+		print(WebUI.getText(findTestObject('Page_Google/input__q')))
 	}
 }

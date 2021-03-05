@@ -1053,8 +1053,10 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement = new FluentWait<WebDriver>(webDriver)
 					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.visibilityOf(By.xpath(to.getXpath())));
-			if (webElement.isDisplayed())
+					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebDriverWait wait = new WebDriverWait(webDriver, webUITimeout);
+			webElement = wait.until(ExpectedConditions.visibilityOf(webElement));
+			if (webElement != null)
 			{
 				return true;
 			}
@@ -1067,7 +1069,8 @@ public class WebUI
 		{
 			if (failure == FailureHandling.STOP_ON_FAILURE)
 			{
-				Assert.fail(e.toString());
+				return false; // Katalon only ever logs a warning and returns false.
+				//Assert.fail(e.toString());
 			}
 			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
 			{
