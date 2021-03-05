@@ -73,6 +73,11 @@ public class WebUI
 	public static void scrollToElement(TestObject to, int timeout) { scrollToElement(to, timeout, defaultFailure); }
 	public static void focus(TestObject to) { focus(to, defaultFailure); }
 	public static boolean verifyTextPresent(String text, boolean isRegex) { verifyTextPresent(text, isRegex, defaultFailure); }
+	public static void back() { back(defaultFailure); }
+	public static boolean verifyElementVisible(TestObject to) { verifyElementVisible(to, defaultFailure); }
+	public static boolean waitForElementVisible(TestObject to, int timeout) { waitForElementVisible(to, timeout, defaultFailure); }
+	public static void clickOffset(TestObject to, int offsetX, int offsetY) { clickOffset(to, offsetX, offsetY, defaultFailure); }
+	public static String getText(TestObject to) { getText(to, defaultFailure); }
 	// public static void setEncryptedText(TestObject to, String text) { setEncryptedText(to, text, defaultFailure) }
 	// END OF FAILURE HANDLING METHODS //
 
@@ -170,9 +175,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 			webElement.click();
 		}
 		catch (Exception e)
@@ -200,9 +203,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			webElement.sendKeys(text);
 		}
 		catch (Exception e)
@@ -706,22 +707,22 @@ public class WebUI
 	}
 
 	@CompileStatic
-	public static boolean verifyElementText(TestObject to, String text, FailureHandling failure) 
+	public static boolean verifyElementText(TestObject to, String text, FailureHandling failure) throws Exception
 	{
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			boolean elementFound = false;
-			try
+			WebElement webElement = new FluentWait<WebDriver>(webDriver)
+				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			boolean textCompare = webElement.getText().equals(text);
+			if (textCompare)
 			{
-				elementFound = new FluentWait<WebDriver>(webDriver)
-					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.textToBe(By.xpath(to.getXpath()), text))
 				return true;
 			}
-			catch(TimeoutException)
+			else
 			{
-				return false;
+				throw Exception;
 			}
 		}
 		catch (Exception e)
@@ -908,7 +909,7 @@ public class WebUI
 
 			webElement = new FluentWait<WebDriver>(webDriver)
 				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			if ("input".equals(webElement.getTagName()))
 			{
 				webElement.sendKeys("");
@@ -983,6 +984,163 @@ public class WebUI
 		}
 	}
 
+	public static void back(FailureHandling failure)
+	{
+		try
+		{
+			WebDriver webDriver = threadLocal.get();
+			webDriver.navigate().back();
+		}
+		catch (Exception e)
+		{
+			if (failure == FailureHandling.STOP_ON_FAILURE)
+			{
+				Assert.fail(e.toString());
+			}
+			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
+			{
+				// Logger?
+				return;
+			}
+			else // FailureHandling.OPTIONAL
+			{
+				// Logger?
+				return;
+			}
+		}
+	}
+
+	public static boolean verifyElementVisible(TestObject to, FailureHandling failure)
+	{
+		try
+		{
+			WebDriver webDriver = threadLocal.get();
+			WebElement webElement = new FluentWait<WebDriver>(webDriver)
+					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			if (webElement.isDisplayed())
+			{
+				return true;
+			}
+			else
+			{
+				throw Exception;
+			}
+		}
+		catch (Exception e)
+		{
+			if (failure == FailureHandling.STOP_ON_FAILURE)
+			{
+				Assert.fail(e.toString());
+			}
+			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
+			{
+				// Logger?
+				return false;
+			}
+			else // FailureHandling.OPTIONAL
+			{
+				// Logger?
+				return false;
+			}
+		}
+	}
+
+	public static boolean waitForElementVisible(TestObject to, int timeout, FailureHandling failure)
+	{
+		try
+		{
+			WebDriver webDriver = threadLocal.get();
+			WebElement webElement = new FluentWait<WebDriver>(webDriver)
+					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
+					.until(ExpectedConditions.visibilityOf(By.xpath(to.getXpath())));
+			if (webElement.isDisplayed())
+			{
+				return true;
+			}
+			else
+			{
+				throw Exception;
+			}
+		}
+		catch (Exception e)
+		{
+			if (failure == FailureHandling.STOP_ON_FAILURE)
+			{
+				Assert.fail(e.toString());
+			}
+			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
+			{
+				// Logger?
+				return false;
+			}
+			else // FailureHandling.OPTIONAL
+			{
+				// Logger?
+				return false;
+			}
+		}
+	}
+
+	public static void clickOffset(TestObject to, int offsetX, int offsetY, FailureHandling failure)
+	{
+		try
+		{
+			WebDriver webDriver = threadLocal.get();
+			WebElement webElement = new FluentWait<WebDriver>(webDriver)
+					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			Actions action = new Actions(webDriver);
+            action.moveToElement(webElement, offsetX, offsetY).click().perform();
+		}
+		catch (Exception e)
+		{
+			if (failure == FailureHandling.STOP_ON_FAILURE)
+			{
+				Assert.fail(e.toString());
+			}
+			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
+			{
+				// Logger?
+				return;
+			}
+			else // FailureHandling.OPTIONAL
+			{
+				// Logger?
+				return;
+			}
+		}
+	}
+
+	public static String getText(TestObject to, FailureHandling failure)
+	{
+		try
+		{
+			WebDriver webDriver = threadLocal.get();
+			WebElement webElement = new FluentWait<WebDriver>(webDriver)
+					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
+					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			return webElement.getText();
+		}
+		catch (Exception e)
+		{
+			if (failure == FailureHandling.STOP_ON_FAILURE)
+			{
+				Assert.fail(e.toString());
+			}
+			else if (failure == FailureHandling.CONTINUE_ON_FAILURE)
+			{
+				// Logger?
+				return null;
+			}
+			else // FailureHandling.OPTIONAL
+			{
+				// Logger?
+				return null;
+			}
+		}
+	}
+
 	// @CompileStatic
 	// public static void setEncryptedText(TestObject to, String text) 
 	// {
@@ -991,11 +1149,32 @@ public class WebUI
 	// 		.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
 	// 		.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 
-	// 	Cryptographer c = new Cryptographer("E:/David_Main_Folder/Projects/Senior-Design-2-pcteUI/PCTE-Gold-AES.txt");
-	// 	String encrypted = c.encrypt(text);
+	// 	// See if OTP appears by waiting for TOTP field to appear 
+    //   if (WebUI.waitForElementPresent(findTestObject('Page_Log in to pcte/input_Login_OneTimeCode'), 10, FailureHandling.OPTIONAL) &&
+    //   ekey != "")
+    //   {
+    //      // Create instance of Google Authenticator 
+    //      GoogleAuthenticatorConfigBuilder gacb = new GoogleAuthenticatorConfigBuilder();
+    //      gacb.setHmacHashFunction(HmacHashFunction.HmacSHA256);
+    //      gacb.setCodeDigits(6);
+    //      gacb.setTimeStepSizeInMillis(90000);
+    //      gacb.setWindowSize(3);
+    //      GoogleAuthenticatorConfig gac = gacb.build();
+    //      g_auth = new GoogleAuthenticator(gac);
 
-	// 	String decrypted = c.decrypt(encrypted);
-		
-	// 	webElement.sendKeys(decrypted);
+    //      // Create instance of decryption code
+    //      Cryptographer key_cryptographer = new Cryptographer(RunConfiguration.getProjectDir() + '/Data Files/code.txt');
+
+    //      // Get the current OTP for the user
+    //      String key = key_cryptographer.decrypt(ekey)
+    //      int code = g_auth.getTotpPassword(key)
+
+    //      // Enter code
+    //      WebUI.setText(findTestObject('Page_Log in to pcte/input_Login_OneTimeCode'), String.format("%06d", code));
+
+    //      // Click on the Login button
+    //      WebUI.click(findTestObject('Page_Log in to pcte/input_Login_OneTimeLogin'), FailureHandling.OPTIONAL);
+    //      TestSupport.delay(1);
+    //   }
 	// }
 }
