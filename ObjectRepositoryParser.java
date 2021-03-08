@@ -1,3 +1,5 @@
+package xml_parser;
+
 import java.util.*;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
@@ -18,9 +20,9 @@ public class ObjectRepositoryParser
   {
     for (int i = 0; i < nodeList.getLength(); i++)
     {
-      Node temp = nodeList.item(i);
-      if (temp.getNodeType() == Node.ELEMENT_NODE)
-      {
+    	Node temp = nodeList.item(i);
+    	if (temp.getNodeType() == Node.ELEMENT_NODE)
+    	{
 
         String s = temp.getNodeName();
         //Adds to array list to create the Xpaths list, there can be multiple xpath elements and this handles it
@@ -132,7 +134,7 @@ public class ObjectRepositoryParser
 
   public ObjectRepositoryParser()
   {
-
+    // empty boy
   }
   /*public static void main (String [] args)
   {
