@@ -20,6 +20,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 import org.junit.Assert
 import com.google.common.base.Function
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
+import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.PBEParameterSpec
+import javax.xml.bind.DatatypeConverter
 
 public class WebUI 
 {
@@ -175,7 +181,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 			webElement.click();
 		}
 		catch (Exception e)
@@ -203,7 +209,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new WebDriverWait(webDriver, 10).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			webElement.sendKeys(text);
 		}
 		catch (Exception e)
@@ -231,9 +237,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
 			webElement.sendKeys(keys);
 		}
 		catch (Exception e)
@@ -533,9 +537,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 			return true;
 		}
 		catch (Exception e)
@@ -563,9 +565,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			if ((webElement.getAttribute(attributeName) != null) && (webElement.getAttribute(attributeName).equals(attributeValue)))
 			{
 				return true;
@@ -712,9 +712,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.elementToBeClickable(By.xpath(to.getXpath())));
 			boolean textCompare = webElement.getText().equals(text);
 			if (textCompare)
 			{
@@ -752,9 +750,7 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement;
 
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			webElement.submit();
 		}
 		catch (Exception e)
@@ -784,9 +780,7 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement;
 
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			return webElement.getSize().height;
 		}
 		catch (Exception e)
@@ -816,9 +810,7 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement;
 
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			return webElement.getSize().width;
 		}
 		catch (Exception e)
@@ -874,9 +866,7 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement;
 
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())))
+			webElement =  new WebDriverWait(webDriver, timeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			JavascriptExecutor js = (JavascriptExecutor) webDriver;
 			js.executeScript("arguments[0].scrollIntoView();", webElement);
 		}
@@ -907,9 +897,7 @@ public class WebUI
 			WebDriver webDriver = threadLocal.get();
 			WebElement webElement;
 
-			webElement = new FluentWait<WebDriver>(webDriver)
-				.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-				.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			if ("input".equals(webElement.getTagName()))
 			{
 				webElement.sendKeys("");
@@ -1015,9 +1003,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			if (webElement.isDisplayed())
 			{
 				return true;
@@ -1051,9 +1037,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(timeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, timeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			WebDriverWait wait = new WebDriverWait(webDriver, webUITimeout);
 			webElement = wait.until(ExpectedConditions.visibilityOf(webElement));
 			if (webElement != null)
@@ -1090,9 +1074,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			Actions action = new Actions(webDriver);
             action.moveToElement(webElement, offsetX, offsetY).click().perform();
 		}
@@ -1120,9 +1102,7 @@ public class WebUI
 		try
 		{
 			WebDriver webDriver = threadLocal.get();
-			WebElement webElement = new FluentWait<WebDriver>(webDriver)
-					.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-					.until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
+			WebElement webElement = new WebDriverWait(webDriver, webUITimeout).until(ExpectedConditions.presenceOfElementLocated(By.xpath(to.getXpath())));
 			return webElement.getText();
 		}
 		catch (Exception e)
@@ -1144,40 +1124,27 @@ public class WebUI
 		}
 	}
 
-	// @CompileStatic
-	// public static void setEncryptedText(TestObject to, String text) 
-	// {
-	// 	WebDriver webDriver = threadLocal.get();
-	// 	WebElement webElement = new FluentWait<WebDriver>(webDriver)
-	// 		.pollingEvery(500, TimeUnit.MILLISECONDS).withTimeout(webUITimeout, TimeUnit.SECONDS)
-	// 		.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(to.getXpath())));
+	@CompileStatic
+	public static void setEncryptedText(TestObject to, String text)
+	{
+		WebDriver webDriver = threadLocal.get();
+		WebElement webElement = webDriver.findElement(By.xpath(to.getXpath()));
+		String rawText = "";
+		
+		try
+		{
+			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBEwithSHA1AndDESede");
+			SecretKey key = keyFactory.generateSecret(new PBEKeySpec("S3cReT K3i".toCharArray()));
+			Cipher pbeCipher = Cipher.getInstance("PBEwithSHA1AndDESede");
+			pbeCipher.init(2, key, new PBEParameterSpec("K@tal0n STudlO".getBytes(), 20));
 
-	// 	// See if OTP appears by waiting for TOTP field to appear 
-    //   if (WebUI.waitForElementPresent(findTestObject('Page_Log in to pcte/input_Login_OneTimeCode'), 10, FailureHandling.OPTIONAL) &&
-    //   ekey != "")
-    //   {
-    //      // Create instance of Google Authenticator 
-    //      GoogleAuthenticatorConfigBuilder gacb = new GoogleAuthenticatorConfigBuilder();
-    //      gacb.setHmacHashFunction(HmacHashFunction.HmacSHA256);
-    //      gacb.setCodeDigits(6);
-    //      gacb.setTimeStepSizeInMillis(90000);
-    //      gacb.setWindowSize(3);
-    //      GoogleAuthenticatorConfig gac = gacb.build();
-    //      g_auth = new GoogleAuthenticator(gac);
-
-    //      // Create instance of decryption code
-    //      Cryptographer key_cryptographer = new Cryptographer(RunConfiguration.getProjectDir() + '/Data Files/code.txt');
-
-    //      // Get the current OTP for the user
-    //      String key = key_cryptographer.decrypt(ekey)
-    //      int code = g_auth.getTotpPassword(key)
-
-    //      // Enter code
-    //      WebUI.setText(findTestObject('Page_Log in to pcte/input_Login_OneTimeCode'), String.format("%06d", code));
-
-    //      // Click on the Login button
-    //      WebUI.click(findTestObject('Page_Log in to pcte/input_Login_OneTimeLogin'), FailureHandling.OPTIONAL);
-    //      TestSupport.delay(1);
-    //   }
-	// }
+			rawText = new String(pbeCipher.doFinal(DatatypeConverter.parseBase64Binary(text)), "UTF-8");
+			
+		
+		}catch (Exception e)
+		{
+			System.out.println("Couldn't decode password.");
+		}
+		webElement.sendKeys(rawText);
+	}
 }

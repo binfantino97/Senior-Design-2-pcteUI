@@ -11,8 +11,8 @@ public class TestScript
 
 		WebUI.navigateToUrl('https://www.google.com/?gws_rd=ssl')
 
-		WebUI.setText(findTestObject('Page_Google/input__q'), 'hello')
+		WebUI.setEncryptedText(findTestObject('Page_Google/input__q'), 'BRB8geN7c9U=')
 
-		print(WebUI.getText(findTestObject('Page_Google/input__q')))
+		WebUI.click(findTestObject('Page_Google/input__q'))
 	}
 }
